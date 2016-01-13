@@ -8,6 +8,9 @@ all:
 run:
 	java -classpath src:jep-2.3.0.jar:djep-1.0.0.jar peersim/Simulator config_file.cfg
 
+run_ring:
+	java -classpath src:jep-2.3.0.jar:djep-1.0.0.jar peersim/Simulator config_file_ring.cfg
+
 clean:
 	rm -f `find . -name "*.class"`
 doc:
