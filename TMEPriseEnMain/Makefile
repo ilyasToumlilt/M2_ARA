@@ -14,6 +14,9 @@ run_ring:
 run_tp2:
 	java -classpath src:jep-2.3.0.jar:djep-1.0.0.jar peersim/Simulator config_file_tp2.cfg
 
+run_proj:
+	java -classpath src:jep-2.3.0.jar:djep-1.0.0.jar peersim/Simulator config_file_project.cfg
+
 clean:
 	rm -f `find . -name "*.class"`
 doc:
