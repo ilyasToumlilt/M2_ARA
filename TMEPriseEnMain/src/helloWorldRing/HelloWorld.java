@@ -60,6 +60,11 @@ public class HelloWorld implements EDProtocol {
 	if(this.nodeId != 0){
 	    Node dest = Network.get((this.nodeId+1)%Network.size());
 	    this.send(new Message(Message.HELLOWORLD, "Hello !!"), dest);
+
+	    /* génération d'une faute */
+	    if(this.nodeId == 7) {
+		Network.get(8).setFailState(Fallible.DEAD);
+	    }
 	}
     }
 

@@ -14,3 +14,8 @@ config_file_ring.cfg
 #####Q2:
 J'ai récupéré les sources dans opt/, et casté les HWTransport en MatrixTransport dans
 HelloWorld.java
+
+#####Q3:
+Je génére une faute sur le noeud 8 quand le noeud 7 reçoit le jeton helloWorld,
+comme toute logique l'aurait prédit, l'exécution s'arrête à la réception du
+noeud 7.
