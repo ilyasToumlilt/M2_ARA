@@ -15,6 +15,7 @@ public class Controler implements peersim.core.Control {
     private int nbStep;        // nombre de tours
     private int stepCounter;
     private double probFailure;
+    private int nbKilled = 0;
     
     public Controler(String prefix) {
 	// On récupère les args du fichier de config :
@@ -28,8 +29,32 @@ public class Controler implements peersim.core.Control {
     }
 
     public boolean execute() {
-	this.stepCounter++;
-	System.out.println("++> Step " + this.stepCounter);
+	System.out.println("++> Step " + (++this.stepCounter));
+
+	// Proba uniforme, si un noeud doit tomber
+	if(CommonState.r.nextDouble() < this.probFailure){
+	    // Tirage uniforme dans combien de temps il va tomber
+	    int killTime = CommonState.r.nextInt(this.nbStep);
+	    // Tirage uniforme du noeud à kill
+	    // qui ne doit pas être mort
+	    int killTarget;
+	    do {
+		killTarget = CommonState.r.nextInt((int)Network.size());
+	    } while(nbKilled<Network.size() && 
+		    Network.get(killTarget).getFailState()==Fallible.DEAD);
+	    nbKilled++;
+
+	    // On send le message
+	    Message msg = new Message(Message.KILL, "BAM !!");
+	    EDSimulator.add(killTime, msg, Network.get(killTarget),
+			    helloWorldPid);
+
+	    System.out.println("+++++> Controler: Node " + killTarget +
+			       " at time " + killTime);
+	} else {
+	    System.out.println("+++++> Controler: No kill this time");
+	}
+	
 	return false;
     }
 }

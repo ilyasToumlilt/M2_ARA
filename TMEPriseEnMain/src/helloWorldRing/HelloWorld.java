@@ -64,13 +64,22 @@ public class HelloWorld implements EDProtocol {
     private void receive(Message msg) {
 	System.out.println(this + ": Received " + msg.getContent() + " at " + CommonState.getTime());
 
-	if(this.nodeId == 0){
-	    this.stepCpt++;
+	switch(msg.getType()){
+	case Message.HELLOWORLD:
+	    if(this.nodeId == 0){
+		this.stepCpt++;
+	    }
+	    if(this.stepCpt <= this.myNbStep){
+		Node dest = Network.get((this.nodeId+1)%Network.size());
+		this.send(new Message(Message.HELLOWORLD, "Hello !!"), dest);
+	    }
+	    break;
+	case Message.KILL:
+	    this.getMyNode().setFailState(Fallible.DEAD);
+	    break;
+	default: break;
 	}
-	if(this.stepCpt <= this.myNbStep){
-	    Node dest = Network.get((this.nodeId+1)%Network.size());
-	    this.send(new Message(Message.HELLOWORLD, "Hello !!"), dest);
-	}
+	
 	/*
 	 * Plus besoin de ça à la question 3, mais je garde le code :-)
 	if(this.nodeId != 0){
