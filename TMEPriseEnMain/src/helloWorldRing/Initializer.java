@@ -1,4 +1,4 @@
-package helloWorld;
+package helloWorldRing;
 
 import peersim.edsim.*;
 import peersim.core.*;
@@ -44,9 +44,17 @@ public class Initializer implements peersim.core.Control {
 	    dest = Network.get(i);
 	    current = (HelloWorld)dest.getProtocol(this.helloWorldPid);
 	    current.setTransportLayer(i);
-	    emitter.send(helloMsg, dest);
 	}
 
+	/* on a besoin d'au moins deux nodes pour le ring */
+	if(nodeNb < 2){
+	    System.err.println("2 or more nodes are needed for this version");
+	    System.exit(1);
+	}
+
+	/* send du message au premier node du ring */
+	emitter.send(helloMsg, Network.get(1));
+	
 	System.out.println("Initialization completed");
 	return false;
     }

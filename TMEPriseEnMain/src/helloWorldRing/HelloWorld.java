@@ -1,4 +1,4 @@
-package helloWorld;
+package helloWorldRing;
 
 import peersim.edsim.*;
 import peersim.core.*;
@@ -57,6 +57,10 @@ public class HelloWorld implements EDProtocol {
     //affichage a la reception
     private void receive(Message msg) {
 	System.out.println(this + ": Received " + msg.getContent() + " at " + CommonState.getTime());
+	if(this.nodeId != 0){
+	    Node dest = Network.get((this.nodeId+1)%Network.size());
+	    this.send(new Message(Message.HELLOWORLD, "Hello !!"), dest);
+	}
     }
 
     //retourne le noeud courant
@@ -67,6 +71,5 @@ public class HelloWorld implements EDProtocol {
     public String toString() {
 	return "Node "+ this.nodeId;
     }
-
     
-}
+ }

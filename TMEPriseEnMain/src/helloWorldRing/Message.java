@@ -1,4 +1,4 @@
-package helloWorld;
+package helloWorldRing;
 
 import peersim.edsim.*;
 
