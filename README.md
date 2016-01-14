@@ -18,4 +18,6 @@ HelloWorld.java
 #####Q3:
 Je génére une faute sur le noeud 8 quand le noeud 7 reçoit le jeton helloWorld,
 comme toute logique l'aurait prédit, l'exécution s'arrête à la réception du
-noeud 7.
+noeud 7. <br/>
+<br/>
+On peut ajuster le nombre de tours du message dans l'anneau via protocol.applicative.myNbStep ( config file ), et le nombre de step du controleur via control.controler.step. <br/>
