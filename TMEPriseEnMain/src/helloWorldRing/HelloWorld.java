@@ -21,12 +21,18 @@ public class HelloWorld implements EDProtocol {
     //prefixe de la couche (nom de la variable de protocole du fichier de config)
     private String prefix;
 
+    // On veut faire tourner le jeton dans l'anneau plusieurs fois
+    private int stepCpt = 0;
+    private int myNbStep;
+
     public HelloWorld(String prefix) {
 	this.prefix = prefix;
 	//initialisation des identifiants a partir du fichier de configuration
 	this.transportPid = Configuration.getPid(prefix + ".transport");
 	this.mypid = Configuration.getPid(prefix + ".myself");
 	this.transport = null;
+	// on récupère le nombre de tours
+	this.myNbStep = Configuration.getInt(prefix + ".myNbStep");
     }
 
     //methode appelee lorsqu'un message est recu par le protocole HelloWorld du noeud
@@ -57,15 +63,25 @@ public class HelloWorld implements EDProtocol {
     //affichage a la reception
     private void receive(Message msg) {
 	System.out.println(this + ": Received " + msg.getContent() + " at " + CommonState.getTime());
+
+	if(this.nodeId == 0){
+	    this.stepCpt++;
+	}
+	if(this.stepCpt <= this.myNbStep){
+	    Node dest = Network.get((this.nodeId+1)%Network.size());
+	    this.send(new Message(Message.HELLOWORLD, "Hello !!"), dest);
+	}
+	/*
+	 * Plus besoin de ça à la question 3, mais je garde le code :-)
 	if(this.nodeId != 0){
 	    Node dest = Network.get((this.nodeId+1)%Network.size());
 	    this.send(new Message(Message.HELLOWORLD, "Hello !!"), dest);
 
-	    /* génération d'une faute */
-	    if(this.nodeId == 7) {
-		Network.get(8).setFailState(Fallible.DEAD);
-	    }
-	}
+	    /* génération d'une faute statique 
+	    //if(this.nodeId == 7) {
+	    //Network.get(8).setFailState(Fallible.DEAD);
+	    //}
+	} */
     }
 
     //retourne le noeud courant
