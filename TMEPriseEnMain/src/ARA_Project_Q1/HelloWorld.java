@@ -27,7 +27,6 @@ public class HelloWorld implements EDProtocol {
     private int deadline = 0;
     private int suspect_duration; // recue en arg dans le fichier de conf
     private int[] suspicion_array;
-    private int[] expectation_hb;
 
     // Node states
     private final int CORRECT   = 0;
@@ -50,12 +49,6 @@ public class HelloWorld implements EDProtocol {
             suspicion_array[i] = CORRECT;
         }
         this.deadline = suspect_duration;
-        
-        expectation_hb = new int[Network.size()];
-        
-        for (int i =0; i < Network.size(); i++) {
-        	expectation_hb[i] = -1;
-        }
     }
 
     //methode appelee lorsqu'un message est recu par le protocole HelloWorld du noeud

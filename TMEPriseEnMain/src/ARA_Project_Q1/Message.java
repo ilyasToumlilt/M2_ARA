@@ -7,7 +7,8 @@ public class Message {
     public final static int HELLOWORLD = 0;
     public final static int KILL       = 1;
     public final static int STATE      = 2;
-    public final static int HB         = 3;
+    public final static int PING       = 3;
+    public final static int PONG       = 4;
     
     private int type;
     private String content;
