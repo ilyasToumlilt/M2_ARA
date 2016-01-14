@@ -10,7 +10,7 @@ public class HelloWorld implements EDProtocol {
     private int transportPid;
 
     //objet couche transport
-    private HWTransport transport;
+    private MatrixTransport transport;
 
     //identifiant de la couche courante (la couche applicative)
     private int mypid;
@@ -46,7 +46,7 @@ public class HelloWorld implements EDProtocol {
     //objet de la couche transport situes sur le meme noeud
     public void setTransportLayer(int nodeId) {
 	this.nodeId = nodeId;
-	this.transport = (HWTransport) Network.get(this.nodeId).getProtocol(this.transportPid);
+	this.transport = (MatrixTransport)Network.get(this.nodeId).getProtocol(this.transportPid);
     }
 
     //envoi d'un message (l'envoi se fait via la couche transport)

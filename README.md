@@ -10,3 +10,7 @@ de l'anneau, et donc une nouvelle cible au Makefile : make run_ring <br/>
 
 Pour la reproductibilité de la simulation, j'ai défini un random seed dans
 config_file_ring.cfg
+
+#####Q2:
+J'ai récupéré les sources dans opt/, et casté les HWTransport en MatrixTransport dans
+HelloWorld.java
