@@ -8,6 +8,25 @@ all:
 run:
 	java -classpath src:jep-2.3.0.jar:djep-1.0.0.jar peersim/Simulator config_file.cfg
 
+run_project_q1:
+	java -classpath src:jep-2.3.0.jar:djep-1.0.0.jar peersim/Simulator config_file_project_q1.cfg
+
+
+run_project_q2_last:
+	java -classpath src:jep-2.3.0.jar:djep-1.0.0.jar peersim/Simulator config_file_project_q2_last.cfg
+
+run_project_q2_avg:
+	java -classpath src:jep-2.3.0.jar:djep-1.0.0.jar peersim/Simulator config_file_project_q2_avg.cfg
+
+run_project_q2_max:
+	java -classpath src:jep-2.3.0.jar:djep-1.0.0.jar peersim/Simulator config_file_project_q2_max.cfg
+
+run_project_q3:
+	java -classpath src:jep-2.3.0.jar:djep-1.0.0.jar peersim/Simulator config_file_project_q3.cfg
+
+run_project_q4:
+	java -classpath src:jep-2.3.0.jar:djep-1.0.0.jar peersim/Simulator config_file_project_q4.cfg
+
 run_ring:
 	java -classpath src:jep-2.3.0.jar:djep-1.0.0.jar peersim/Simulator config_file_ring.cfg
 
