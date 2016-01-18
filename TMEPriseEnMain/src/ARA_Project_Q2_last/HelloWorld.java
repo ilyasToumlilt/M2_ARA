@@ -1,6 +1,4 @@
-package ARA_Project;
-
-import java.util.ArrayList;
+package ARA_Project_Q2_last;
 
 import peersim.edsim.*;
 import peersim.core.*;
@@ -30,7 +28,7 @@ public class HelloWorld implements EDProtocol {
     private long suspect_duration; // recue en arg dans le fichier de conf
     private long[] suspicion_array;
     private long[] expectation_hb;
-    private Arraylist<ArrayList<Long>> avg;
+    private long[] last;
     
 
     // Node states
@@ -56,10 +54,10 @@ public class HelloWorld implements EDProtocol {
         this.deadline = suspect_duration;
         
         expectation_hb = new long[Network.size()];
-	avg = new Arraylist<ArrayList<Long>>(Network.size());
+	last = new long[Network.size()];
         
         for (i =0; i < Network.size(); i++) {
-	    avg[i] = -1;
+	    last[i] = -1;
 	    expectation_hb[i] = -1;
         }
     }
@@ -140,12 +138,12 @@ public class HelloWorld implements EDProtocol {
 	case Message.HB:
 	    /* updating expectation deadline */
 	    if(expectation_hb[msg.getIdSender()]==-1){
-		avg[msg.getIdSender()] = this.state;
+		last[msg.getIdSender()] = this.state;
 	    } else {
-		avg[msg.getIdSender()] = this.state-(this.expectation_hb[msg.getIdSender()]-avg[msg.getIdSender()]);
+		last[msg.getIdSender()] = this.state-(this.expectation_hb[msg.getIdSender()]-last[msg.getIdSender()]);
 		    
 	    }
-	    this.expectation_hb[msg.getIdSender()] = this.state + avg[msg.getIdSender()];
+	    this.expectation_hb[msg.getIdSender()] = this.state + last[msg.getIdSender()];
 	    suspicion_array[msg.getIdSender()] = this.CORRECT;
 	default: break;
 	}

@@ -1,4 +1,4 @@
-package ARA_Project_Q1;
+package ARA_Project_Q2_last;
 
 import peersim.edsim.*;
 
@@ -7,8 +7,7 @@ public class Message {
     public final static int HELLOWORLD = 0;
     public final static int KILL       = 1;
     public final static int STATE      = 2;
-    public final static int PING       = 3;
-    public final static int PONG       = 4;
+    public final static int HB         = 3;
     
     private int type;
     private String content;
