@@ -1,4 +1,4 @@
-package ARA_Project_Q2_avg;
+package ARA_Project_Q2_max;
 
 import java.util.ArrayList;
 
@@ -157,8 +157,8 @@ public class HelloWorld implements EDProtocol {
 								- avg.get(msg.getIdSender()).get(
 										avg.get(msg.getIdSender()).size() - 1));
 				for (int i = 0; i < avg.get(msg.getIdSender()).size(); i++)
-					tmp += avg.get(msg.getIdSender()).get(i);
-				tmp /= avg.get(msg.getIdSender()).size();
+					tmp = (tmp < avg.get(msg.getIdSender()).get(i)) ? avg.get(
+							msg.getIdSender()).get(i) : tmp;
 			}
 			this.expectation_hb[msg.getIdSender()] = this.state + tmp;
 			suspicion_array[msg.getIdSender()] = this.CORRECT;
