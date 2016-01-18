@@ -110,14 +110,15 @@ public class HelloWorld implements EDProtocol {
 
 		switch (msg.getType()) {
 		case Message.HELLOWORLD:
-			System.out.println("[" + CommonState.getTime() + "] " + this
-					+ ": Received " + msg.getContent() + " from "
+			System.out.println("[" + CommonState.getTime() + "]" + "[" + this
+					+ "]" + " Received " + msg.getContent() + " from "
 					+ msg.getIdSender());
 
 			break;
 		case Message.KILL:
-			System.out.println("[" + CommonState.getTime() + "] " + this
-					+ " : i'm gonna DIE");
+			System.out.println("[" + CommonState.getTime() + "] " + "[" + this
+					+ "]" + " received kill" + " from "
+					+ msg.getIdSender());
 			this.getMyNode().setFailState(Fallible.DEAD);
 			break;
 		case Message.STATE:
@@ -127,18 +128,22 @@ public class HelloWorld implements EDProtocol {
 					this.mypid);
 			if (CommonState.r.nextLong(10) < 5) {
 
-				this.send(new Message(Message.HELLOWORLD, "Hello !!",
+				this.send(new Message(Message.HELLOWORLD, "Hello",
 						this.nodeId), this.getRandomAliveNode());
 			}
 			if (CommonState.r.nextLong(1000) < 5) {
 				this.broadcastSend(new Message(Message.HELLOWORLD,
-						"Broadcast hello !!", this.nodeId));
+						"Broadcast hello", this.nodeId));
 			}
 			/* first failure detection */
 			if (this.deadline == this.state) {
 				for (int i = 0; i < Network.size(); i++) {
+					if (suspicion_array[msg.getIdSender()] == SUSPECTED)
+						System.out.println("==>[" + CommonState.getTime() + "]"
+								+ "[" + this + "] suspected node:  "
+								+ msg.getIdSender());
 					suspicion_array[i] = this.SUSPECTED;
-					this.send(new Message(Message.HB, "Yop!!", this.nodeId),
+					this.send(new Message(Message.HB, "Heartbeat", this.nodeId),
 							Network.get(i));
 				}
 				this.deadline += suspect_duration;
@@ -161,6 +166,12 @@ public class HelloWorld implements EDProtocol {
 				tmp /= avg.get(msg.getIdSender()).size();
 			}
 			this.expectation_hb[msg.getIdSender()] = this.state + tmp;
+			
+			if (suspicion_array[msg.getIdSender()] == this.SUSPECTED) {
+				System.out.println("==>[" + CommonState.getTime() + "]"
+						+ "[" + this + "] wrong detection node: "
+						+ msg.getIdSender());
+			}
 			suspicion_array[msg.getIdSender()] = this.CORRECT;
 		default:
 			break;

@@ -1,4 +1,6 @@
-package ARA_Project_Q1;
+package ARA_Project_Q3;
+
+import java.util.ArrayList;
 
 import peersim.edsim.*;
 import peersim.core.*;
@@ -25,9 +27,12 @@ public class HelloWorld implements EDProtocol {
 	private long state = 0;
 
 	/* failure detector */
-	private int deadline = 0;
-	private int suspect_duration; // recue en arg dans le fichier de conf
-	private int[] suspicion_array;
+	private long deadline;
+	private long suspect_duration; // recue en arg dans le fichier de conf
+	private long[] suspicion_array;
+	private long[] expectation_hb;
+	private ArrayList<ArrayList<Long>> avg;
+	private int k_chen_al;
 
 	// Node states
 	private final int CORRECT = 0;
@@ -45,12 +50,25 @@ public class HelloWorld implements EDProtocol {
 		this.suspect_duration = Configuration.getInt(prefix
 				+ ".suspectDuration");
 
-		suspicion_array = new int[Network.size()];
+		suspicion_array = new long[Network.size()];
+		
+		this.k_chen_al = Configuration.getInt(prefix + ".k_chen_al");
+		
 		int i;
 		for (i = 0; i < Network.size(); i++) {
 			suspicion_array[i] = CORRECT;
 		}
 		this.deadline = suspect_duration;
+
+		expectation_hb = new long[Network.size()];
+		avg = new ArrayList<ArrayList<Long>>();
+
+		ArrayList<Long> tmp;
+		for (i = 0; i < Network.size(); i++) {
+			tmp = new ArrayList<Long>();
+			avg.add(tmp);
+			expectation_hb[i] = -1;
+		}
 	}
 
 	// methode appelee lorsqu'un message est recu par le protocole HelloWorld du
@@ -96,18 +114,14 @@ public class HelloWorld implements EDProtocol {
 
 		switch (msg.getType()) {
 		case Message.HELLOWORLD:
-			System.out.println("[" + CommonState.getTime() + "]" + "[" + this
-					+ "]" + " Received " + msg.getContent() + " from "
+			System.out.println("[" + CommonState.getTime() + "] " + this
+					+ ": Received " + msg.getContent() + " from "
 					+ msg.getIdSender());
-			// Node dest =
-			// Network.get(CommonState.r.nextInt((int)Network.size()));
-			// this.send(new Message(Message.HELLOWORLD, "Hello !!"), dest);
 
 			break;
 		case Message.KILL:
-			System.out.println("[" + CommonState.getTime() + "] " + "[" + this
-					+ "]" + " received kill" + " from "
-					+ msg.getIdSender());
+			System.out.println("[" + CommonState.getTime() + "] " + this
+					+ " : i'm gonna DIE");
 			this.getMyNode().setFailState(Fallible.DEAD);
 			break;
 		case Message.STATE:
@@ -117,49 +131,48 @@ public class HelloWorld implements EDProtocol {
 					this.mypid);
 			if (CommonState.r.nextLong(10) < 5) {
 
-				this.send(
-						new Message(Message.HELLOWORLD, "Hello", this.nodeId),
-						this.getRandomAliveNode());
+				this.send(new Message(Message.HELLOWORLD, "Hello !!",
+						this.nodeId), this.getRandomAliveNode());
 			}
 			if (CommonState.r.nextLong(1000) < 5) {
 				this.broadcastSend(new Message(Message.HELLOWORLD,
-						"Broadcast hello", this.nodeId));
+						"Broadcast hello !!", this.nodeId));
 			}
-			/* failure detection */
+			/* first failure detection */
 			if (this.deadline == this.state) {
 				for (int i = 0; i < Network.size(); i++) {
-					if (suspicion_array[msg.getIdSender()] == SUSPECTED)
-						System.out.println("==>[" + CommonState.getTime() + "]"
-								+ "[Node " + this + "] suspected node:  "
-								+ msg.getIdSender());
-					suspicion_array[i] = (suspicion_array[i] == SUSPECTED) ? FAILED
-							: suspicion_array[i];
+					suspicion_array[i] = this.SUSPECTED;
+					this.send(new Message(Message.HB, "Yop!!", this.nodeId),
+							Network.get(i));
 				}
 				this.deadline += suspect_duration;
-				for (int i = 0; i < Network.size(); i++) {
-					if (suspicion_array[i] == CORRECT) {
-						suspicion_array[i] = SUSPECTED;
-						this.send(new Message(Message.PING, "Ping !!",
-								this.nodeId), Network.get(i));
-					}
-				}
 			}
 			break;
-		case Message.PING:
-			System.out.println("[" + CommonState.getTime() + "]" + "[" + this
-					+ "]" + " Received PING from " + msg.getIdSender());
-			this.send(new Message(Message.PONG, "Pong !!", this.nodeId),
-					Network.get(msg.getIdSender()));
-			break;
-		case Message.PONG:
-			System.out.println("[" + CommonState.getTime() + "]" + "[" + this
-					+ "]" + " Received PONG from " + msg.getIdSender());
-			if (suspicion_array[msg.getIdSender()] == FAILED)
-				System.out.println("==>[" + CommonState.getTime() + "]"
-						+ "[Node " + this + "] wrong detection node: "
-						+ msg.getIdSender());
-			suspicion_array[msg.getIdSender()] = CORRECT;
-			break;
+		case Message.HB:
+			/* updating expectation deadline */
+			long tmp = 0;
+			if (expectation_hb[msg.getIdSender()] == -1) {
+				avg.get(msg.getIdSender()).add(this.state);
+				tmp = this.state;
+			} else {
+				
+				System.out.println(" ++++++++++++++++++ Size : " + avg.get(msg.getIdSender()).size());
+				avg.get(msg.getIdSender()).add(this.state - this.expectation_hb[msg.getIdSender()] - avg.get(msg.getIdSender()).get
+						(avg.get(msg.getIdSender()).size() - 1));
+				
+				if (avg.get(msg.getIdSender()).size() > k_chen_al) {
+					avg.get(msg.getIdSender()).remove(0);
+					
+				}
+				for(int i=0; i<avg.get(msg.getIdSender()).size(); i++)
+					tmp += avg.get(msg.getIdSender()).get(i);
+				
+				System.out.println("TMP : " + tmp);
+				tmp /= avg.get(msg.getIdSender()).size();
+				System.out.println("TMP : " + tmp);			
+			}
+			this.expectation_hb[msg.getIdSender()] = this.state + tmp;
+			suspicion_array[msg.getIdSender()] = this.CORRECT;
 		default:
 			break;
 		}
