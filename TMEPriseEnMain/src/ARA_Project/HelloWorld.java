@@ -114,10 +114,6 @@ public class HelloWorld implements EDProtocol {
 
 		switch (msg.getType()) {
 		case Message.HELLOWORLD:
-			System.out.println("[" + CommonState.getTime() + "] " + this
-					+ ": Received " + msg.getContent() + " from "
-					+ msg.getIdSender());
-
 			break;
 		case Message.KILL:
 			System.out.println("[" + CommonState.getTime() + "] " + this
@@ -142,7 +138,7 @@ public class HelloWorld implements EDProtocol {
 			if (this.deadline == this.state) {
 				for (int i = 0; i < Network.size(); i++) {
 					suspicion_array[i] = this.SUSPECTED;
-					this.send(new Message(Message.HB, "Yop!!", this.nodeId),
+					this.send(new Message(Message.HB, "Heartbeat", this.nodeId),
 							Network.get(i));
 				}
 				this.deadline += suspect_duration;

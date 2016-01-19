@@ -110,10 +110,6 @@ public class HelloWorld implements EDProtocol {
 
 		switch (msg.getType()) {
 		case Message.HELLOWORLD:
-			System.out.println("[" + CommonState.getTime() + "]" + "[" + this
-					+ "]" + " Received " + msg.getContent() + " from "
-					+ msg.getIdSender());
-
 			break;
 		case Message.KILL:
 			System.out.println("[" + CommonState.getTime() + "] " + "[" + this
@@ -162,6 +158,8 @@ public class HelloWorld implements EDProtocol {
 							msg.getIdSender()).get(i) : tmp;
 			}
 			this.expectation_hb[msg.getIdSender()] = this.state + tmp;
+			
+			System.out.println("\t new prediction for node " + msg.getIdSender() + " : " + this.expectation_hb[msg.getIdSender()]);
 			
 			if (suspicion_array[msg.getIdSender()] == this.SUSPECTED) {
 				System.out.println("==>[" + CommonState.getTime() + "]"

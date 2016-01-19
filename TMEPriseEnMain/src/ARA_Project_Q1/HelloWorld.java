@@ -96,9 +96,6 @@ public class HelloWorld implements EDProtocol {
 
 		switch (msg.getType()) {
 		case Message.HELLOWORLD:
-			System.out.println("[" + CommonState.getTime() + "]" + "[" + this
-					+ "]" + " Received " + msg.getContent() + " from "
-					+ msg.getIdSender());
 			// Node dest =
 			// Network.get(CommonState.r.nextInt((int)Network.size()));
 			// this.send(new Message(Message.HELLOWORLD, "Hello !!"), dest);
@@ -139,7 +136,7 @@ public class HelloWorld implements EDProtocol {
 				for (int i = 0; i < Network.size(); i++) {
 					if (suspicion_array[i] == CORRECT) {
 						suspicion_array[i] = SUSPECTED;
-						this.send(new Message(Message.PING, "Ping !!",
+						this.send(new Message(Message.PING, "Ping",
 								this.nodeId), Network.get(i));
 					}
 				}
@@ -148,7 +145,7 @@ public class HelloWorld implements EDProtocol {
 		case Message.PING:
 			System.out.println("[" + CommonState.getTime() + "]" + "[" + this
 					+ "]" + " Received PING from " + msg.getIdSender());
-			this.send(new Message(Message.PONG, "Pong !!", this.nodeId),
+			this.send(new Message(Message.PONG, "Pong", this.nodeId),
 					Network.get(msg.getIdSender()));
 			break;
 		case Message.PONG:

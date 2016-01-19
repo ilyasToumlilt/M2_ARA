@@ -114,14 +114,11 @@ public class HelloWorld implements EDProtocol {
 
 		switch (msg.getType()) {
 		case Message.HELLOWORLD:
-			System.out.println("[" + CommonState.getTime() + "] " + this
-					+ ": Received " + msg.getContent() + " from "
-					+ msg.getIdSender());
-
 			break;
 		case Message.KILL:
-			System.out.println("[" + CommonState.getTime() + "] " + this
-					+ " : i'm gonna DIE");
+			System.out.println("[" + CommonState.getTime() + "] " + "[" + this
+					+ "]" + " received kill" + " from "
+					+ msg.getIdSender());
 			this.getMyNode().setFailState(Fallible.DEAD);
 			break;
 		case Message.STATE:
@@ -131,18 +128,18 @@ public class HelloWorld implements EDProtocol {
 					this.mypid);
 			if (CommonState.r.nextLong(10) < 5) {
 
-				this.send(new Message(Message.HELLOWORLD, "Hello !!",
+				this.send(new Message(Message.HELLOWORLD, "Hello",
 						this.nodeId), this.getRandomAliveNode());
 			}
 			if (CommonState.r.nextLong(1000) < 5) {
 				this.broadcastSend(new Message(Message.HELLOWORLD,
-						"Broadcast hello !!", this.nodeId));
+						"Broadcast hello", this.nodeId));
 			}
 			/* first failure detection */
 			if (this.deadline == this.state) {
 				for (int i = 0; i < Network.size(); i++) {
 					suspicion_array[i] = this.SUSPECTED;
-					this.send(new Message(Message.HB, "Yop!!", this.nodeId),
+					this.send(new Message(Message.HB, "Heartbeat", this.nodeId),
 							Network.get(i));
 				}
 				this.deadline += suspect_duration;
@@ -150,13 +147,16 @@ public class HelloWorld implements EDProtocol {
 			break;
 		case Message.HB:
 			/* updating expectation deadline */
+			
+			System.out.println("[" + CommonState.getTime() + "]"
+					+ "[" + this + "] received heartbeat from:  "
+					+ msg.getIdSender());
 			long tmp = 0;
 			if (expectation_hb[msg.getIdSender()] == -1) {
 				avg.get(msg.getIdSender()).add(this.state);
 				tmp = this.state;
 			} else {
 				
-				System.out.println(" ++++++++++++++++++ Size : " + avg.get(msg.getIdSender()).size());
 				avg.get(msg.getIdSender()).add(this.state - this.expectation_hb[msg.getIdSender()] - avg.get(msg.getIdSender()).get
 						(avg.get(msg.getIdSender()).size() - 1));
 				
@@ -167,9 +167,8 @@ public class HelloWorld implements EDProtocol {
 				for(int i=0; i<avg.get(msg.getIdSender()).size(); i++)
 					tmp += avg.get(msg.getIdSender()).get(i);
 				
-				System.out.println("TMP : " + tmp);
 				tmp /= avg.get(msg.getIdSender()).size();
-				System.out.println("TMP : " + tmp);			
+				System.out.println("\t new prediction for node " + msg.getIdSender() + " : " + (CommonState.getTime()+ tmp));		
 			}
 			this.expectation_hb[msg.getIdSender()] = this.state + tmp;
 			suspicion_array[msg.getIdSender()] = this.CORRECT;
